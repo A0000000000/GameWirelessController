@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    tools:context=".ControllerActivity"
+    android:baselineAligned="false">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="4"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/left_button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            tools:ignore="NestedWeights">
+
+            <xyz.a00000.gamewirelesscontroller.view.TriggerButton
+                android:id="@+id/tb_lt"
+                android:layout_width="0dp"
+                android:layout_weight="8"
+                android:text="LT"
+                android:layout_height="wrap_content"/>
+
+            <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                android:id="@+id/sb_lb"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="LB"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/left_panel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+                    <xyz.a00000.gamewirelesscontroller.view.RockerView
+                        android:id="@+id/rv_left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true">
+
+                        <xyz.a00000.gamewirelesscontroller.view.CrossKeyView
+                            android:id="@+id/ckv_t"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_toLeftOf="@+id/ckv_r"
+                            app:landscape="false"/>
+
+                        <xyz.a00000.gamewirelesscontroller.view.CrossKeyView
+                            android:id="@+id/ckv_b"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_toLeftOf="@+id/ckv_r"
+                            app:landscape="false"/>
+
+                        <xyz.a00000.gamewirelesscontroller.view.CrossKeyView
+                            android:id="@+id/ckv_l"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@+id/ckv_t"
+                            android:layout_centerVertical="true"/>
+
+                        <xyz.a00000.gamewirelesscontroller.view.CrossKeyView
+                            android:id="@+id/ckv_r"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"/>
+
+                    </RelativeLayout>
+                </FrameLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tv_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Game Wireless Controller"
+                android:textAllCaps="false" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/center_panel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3">
+
+            <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                android:id="@+id/sb_main"
+                android:text="Main"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                android:id="@+id/sb_view"
+                android:text="View"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                android:id="@+id/sb_menu"
+                android:text="Menu"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                android:id="@+id/sb_function"
+                android:text="Function"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/tv_log"
+                android:text=""
+                android:textAllCaps="false"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="4"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/right_button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            tools:ignore="NestedWeights">
+
+
+            <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                android:id="@+id/sb_rb"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="RB"
+                android:layout_height="wrap_content"/>
+
+            <xyz.a00000.gamewirelesscontroller.view.TriggerButton
+                android:id="@+id/tb_rt"
+                android:layout_width="0dp"
+                android:layout_weight="8"
+                android:text="RT"
+                app:direction="false"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/right_panel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true">
+
+                        <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                            android:id="@+id/sb_y"
+                            android:text="Y"
+                            app:fontColor_2="#FFFF00"
+                            android:layout_alignParentTop="true"
+                            android:layout_toLeftOf="@+id/sb_b"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                            android:id="@+id/sb_x"
+                            android:text="X"
+                            app:fontColor_2="#0000FF"
+                            android:layout_toLeftOf="@+id/sb_a"
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                            android:id="@+id/sb_a"
+                            android:text="A"
+                            app:fontColor_2="#008000"
+                            android:layout_alignParentBottom="true"
+                            android:layout_toLeftOf="@+id/sb_b"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <xyz.a00000.gamewirelesscontroller.view.SimpleButton
+                            android:id="@+id/sb_b"
+                            android:text="B"
+                            app:fontColor_2="#FF0000"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                    </RelativeLayout>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+                    <xyz.a00000.gamewirelesscontroller.view.RockerView
+                        android:id="@+id/rv_right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"/>
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
