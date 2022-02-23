@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class BluetoothConnection implements AutoCloseable {
 
@@ -81,6 +82,7 @@ public class BluetoothConnection implements AutoCloseable {
     @Override
     public void close() throws Exception {
         if (stream != null) {
+            sendData("DISCONNECT".getBytes(StandardCharsets.UTF_8));
             bluetoothController.disconnectTargetDevices(stream);
             stream = null;
         }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View.*
@@ -20,6 +21,7 @@ import xyz.a00000.gamewirelesscontroller.view.RockerView
 import xyz.a00000.gamewirelesscontroller.view.SimpleButton
 import xyz.a00000.gamewirelesscontroller.view.TriggerButton
 import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import kotlin.math.min
 
 
@@ -56,8 +58,15 @@ class ControllerActivity : Activity() {
         mRightPanel = findViewById(R.id.right_panel)
         mCenterPanel = findViewById(R.id.center_panel)
         mTargetDevice = intent.getStringExtra("targetDevice")
-        mTvTips?.text = String.format("%s - %s", mTvTips?.text, mTargetDevice)
-        initConnectionService()
+        mTvTips?.text = String.format("%s - 未连接", TIPS)
+        Thread {
+            if (initConnectionService()) {
+                runOnUiThread {
+                    mTvTips?.text = String.format("%s - %s", TIPS, mTargetDevice)
+                    Toast.makeText(this@ControllerActivity, "${mTargetDevice}连接成功!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }.start()
     }
 
     private fun logKey(type: KeyType, action: Int, data: Map<String, Any>) {
@@ -389,7 +398,7 @@ class ControllerActivity : Activity() {
         try {
             mConnection?.sendData(
                 TransferObject(data, 0, "Input Event").toJson()
-                    .toByteArray(Charset.forName("UTF-8"))
+                    .toByteArray(StandardCharsets.UTF_8)
             )
         } catch (e: Exception) {
             Toast.makeText(this, "事件发送失败: 原因: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -399,11 +408,15 @@ class ControllerActivity : Activity() {
     companion object {
         @JvmStatic
         val UUID = "6ef82393-6cab-4749-b0b5-df0109fb7dec"
+        @JvmStatic
+        val TAG = "ControllerActivity"
+        @JvmStatic
+        val TIPS = "Game Wireless Controller"
     }
 
     var mConnection: BluetoothConnection? = null
 
-    fun initConnectionService() {
+    fun initConnectionService(): Boolean {
         try {
             mConnection = ConnectionFactory()
                 .setBluetoothController(mBluetoothController)
@@ -416,6 +429,8 @@ class ControllerActivity : Activity() {
                     runOnUiThread {
                         Toast.makeText(this, "接收到来自PC端意料之外的数据, rev = $rev", Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    Log.d(TAG, "正常收到消息: $rev")
                 }
             }
             mConnection?.setOnDisconnect {
@@ -425,10 +440,14 @@ class ControllerActivity : Activity() {
                 }
             }
             mConnection?.openConnect()
+            return true
         } catch (e: Exception) {
-            Toast.makeText(this, "连接失败, 原因: ${e.message}", Toast.LENGTH_SHORT).show()
+            runOnUiThread {
+                Toast.makeText(this, "连接失败, 原因: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
             finish()
         }
+        return false
     }
 
     override fun onDestroy() {
