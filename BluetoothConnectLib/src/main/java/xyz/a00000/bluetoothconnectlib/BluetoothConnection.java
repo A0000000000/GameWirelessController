@@ -82,7 +82,6 @@ public class BluetoothConnection implements AutoCloseable {
     @Override
     public void close() throws Exception {
         if (stream != null) {
-            sendData("DISCONNECT".getBytes(StandardCharsets.UTF_8));
             bluetoothController.disconnectTargetDevices(stream);
             stream = null;
         }

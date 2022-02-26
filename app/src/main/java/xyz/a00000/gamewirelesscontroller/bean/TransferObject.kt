@@ -1,8 +1,11 @@
 package xyz.a00000.gamewirelesscontroller.bean
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 
-open class TransferObject(data: Map<String, Any>, type: Int, message: String) {
+@JsonNaming( PropertyNamingStrategies.UpperCamelCaseStrategy::class)
+open class TransferObject  constructor(data: Map<String, Any>?, type: Int, message: String) {
 
     companion object {
 
@@ -16,7 +19,11 @@ open class TransferObject(data: Map<String, Any>, type: Int, message: String) {
 
     }
 
-    var data: Map<String, Any>? = null;
+    constructor(): this(null, 0, "") {
+
+    }
+
+    var data: Map<String, Any>? = null
     var type: Int = 0
     var message: String = ""
 
@@ -27,7 +34,7 @@ open class TransferObject(data: Map<String, Any>, type: Int, message: String) {
     }
 
     fun toJson(): String {
-        return objectMapper.writeValueAsString(this);
+        return objectMapper.writeValueAsString(this)
     }
 
 }

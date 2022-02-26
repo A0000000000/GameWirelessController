@@ -381,8 +381,8 @@ class ControllerActivity : Activity() {
             MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> "UP"
             else -> "UNKNOWN"
         }
-        composerData["data"] = data
-        sendEventData(composerData)
+        composerData.putAll(data)
+        sendEventData(TransferObject(composerData, 0, "EVENT"))
     }
 
     private fun vibrate() {
@@ -394,12 +394,9 @@ class ControllerActivity : Activity() {
         }
     }
 
-    private fun sendEventData(data: Map<String, Any>) {
+    private fun sendEventData(data: TransferObject) {
         try {
-            mConnection?.sendData(
-                TransferObject(data, 0, "Input Event").toJson()
-                    .toByteArray(StandardCharsets.UTF_8)
-            )
+            mConnection?.sendData(data.toJson().toByteArray(StandardCharsets.UTF_8))
         } catch (e: Exception) {
             Toast.makeText(this, "事件发送失败: 原因: ${e.message}", Toast.LENGTH_SHORT).show()
         }
@@ -424,18 +421,21 @@ class ControllerActivity : Activity() {
                 .setUuid(UUID)
                 .build()
             mConnection?.setOnReceive {
-                val rev = String(it, Charset.forName("UTF-8"))
-                if ("SUCCESS" != rev) {
+                val obj = TransferObject.fromJson(String(it, Charset.forName("UTF-8")))
+                if("DISCONNECT" == obj.message) {
+                    finish()
+                } else if ("SUCCESS" != obj.message) {
                     runOnUiThread {
-                        Toast.makeText(this, "接收到来自PC端意料之外的数据, rev = $rev", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "接收到来自PC端意料之外的数据, rev = ${obj.message}", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Log.d(TAG, "正常收到消息: $rev")
+                    Log.d(TAG, "正常收到消息: ${obj.toJson()}")
                 }
             }
             mConnection?.setOnDisconnect {
                 runOnUiThread {
                     Toast.makeText(this, "连接已断开", Toast.LENGTH_SHORT).show()
+                    sendEventData(TransferObject(HashMap(), 0, "DISCONNECT"))
                     finish()
                 }
             }
@@ -445,6 +445,7 @@ class ControllerActivity : Activity() {
             runOnUiThread {
                 Toast.makeText(this, "连接失败, 原因: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+            sendEventData(TransferObject(HashMap(), 0, "DISCONNECT"))
             finish()
         }
         return false
@@ -452,6 +453,7 @@ class ControllerActivity : Activity() {
 
     override fun onDestroy() {
         try {
+            sendEventData(TransferObject(HashMap(), 0, "DISCONNECT"))
             mConnection?.close()
         } catch (ignore: Exception) { }
         super.onDestroy()
