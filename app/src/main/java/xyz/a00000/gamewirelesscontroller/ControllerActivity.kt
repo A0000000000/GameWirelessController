@@ -328,7 +328,7 @@ class ControllerActivity : Activity() {
                 }
             }
             mFirstVolumeDown = false
-            return true;
+            return true
         }
         return super.onKeyDown(keyCode, event)
     }
@@ -342,7 +342,7 @@ class ControllerActivity : Activity() {
                 mRightButton?.swapColor()
             }
             mFirstVolumeDown = true
-            return true;
+            return true
         }
         return super.onKeyUp(keyCode, event)
     }
