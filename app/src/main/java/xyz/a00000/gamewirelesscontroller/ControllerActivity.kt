@@ -408,7 +408,7 @@ class ControllerActivity : Activity() {
         try {
             mConnection?.sendData(data.toJson().toByteArray(StandardCharsets.UTF_8))
         } catch (e: Exception) {
-            Toast.makeText(this, "事件发送失败: 原因: ${e.message}", Toast.LENGTH_SHORT).show()
+            // Toast.makeText(this, "事件发送失败: 原因: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
