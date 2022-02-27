@@ -32,6 +32,8 @@ class MainActivity : AppCompatActivity() {
             val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
             if (permission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 0)
+            } else {
+                mDevices = mBluetoothController.pairedDevicesName
             }
         }
         if (!mBluetoothController.isSupportBluetooth) {
@@ -40,7 +42,6 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
-        mDevices = mBluetoothController.pairedDevicesName
         mTvTitle = findViewById(R.id.tv_title)
         mTvFlush = findViewById(R.id.tv_flush)
         mLvDevices = findViewById(R.id.lv_devices)
@@ -64,6 +65,8 @@ class MainActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "缺少必要权限!", Toast.LENGTH_SHORT).show()
                 finish()
+            } else {
+                mDevices = mBluetoothController.pairedDevicesName
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
