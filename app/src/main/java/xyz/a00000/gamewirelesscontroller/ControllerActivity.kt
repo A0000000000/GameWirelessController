@@ -369,6 +369,16 @@ class ControllerActivity : Activity() {
     }
 
     private fun inputComposer(type: KeyType, action: Int, data: Map<String, Any>) {
+        if (action == MotionEvent.ACTION_MOVE) {
+            if (!(type == KeyType.LEFT_TRIGGER
+                        || type == KeyType.RIGHT_TRIGGER
+                        || (type == KeyType.LEFT_ROCKER && "move" == data["type"]?.toString())
+                        || (type == KeyType.RIGHT_ROCKER && "move" == data["type"]?.toString())
+                        )
+            ) {
+                return
+            }
+        }
         logKey(type, action, data)
         if (action == MotionEvent.ACTION_DOWN) {
             vibrate()
@@ -422,14 +432,18 @@ class ControllerActivity : Activity() {
                 .build()
             mConnection?.setOnReceive {
                 val obj = TransferObject.fromJson(String(it, Charset.forName("UTF-8")))
-                if("DISCONNECT" == obj.message) {
-                    finish()
-                } else if ("SUCCESS" != obj.message) {
-                    runOnUiThread {
-                        Toast.makeText(this, "接收到来自PC端意料之外的数据, rev = ${obj.message}", Toast.LENGTH_SHORT).show()
+                when {
+                    "DISCONNECT" == obj.message -> {
+                        finish()
                     }
-                } else {
-                    Log.d(TAG, "正常收到消息: ${obj.toJson()}")
+                    "SUCCESS" != obj.message -> {
+                        runOnUiThread {
+                            Toast.makeText(this, "接收到来自PC端意料之外的数据, rev = ${obj.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    else -> {
+                        Log.d(TAG, "正常收到消息: ${obj.toJson()}")
+                    }
                 }
             }
             mConnection?.setOnDisconnect {
@@ -443,10 +457,19 @@ class ControllerActivity : Activity() {
             return true
         } catch (e: Exception) {
             runOnUiThread {
+                mTvTips?.text = String.format("%s - %s", TIPS, "未连接")
                 Toast.makeText(this, "连接失败, 原因: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-            sendEventData(TransferObject(HashMap(), 0, "DISCONNECT"))
-            finish()
+            Thread {
+                if (initConnectionService()) {
+                    runOnUiThread {
+                        mTvTips?.text = String.format("%s - %s", TIPS, mTargetDevice)
+                        Toast.makeText(this@ControllerActivity, "${mTargetDevice}重新连接成功!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }.start()
+//            sendEventData(TransferObject(HashMap(), 0, "DISCONNECT"))
+//            finish()
         }
         return false
     }

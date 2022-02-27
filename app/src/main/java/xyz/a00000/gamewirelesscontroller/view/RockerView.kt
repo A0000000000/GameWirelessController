@@ -9,6 +9,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import xyz.a00000.gamewirelesscontroller.R
+import java.lang.Integer.max
+import java.lang.Integer.min
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -49,7 +51,7 @@ open class RockerView(context: Context, attrs: AttributeSet): View(context, attr
         private set
     var mFrontPoint: Point = Point(mRadius.toInt(), mRadius.toInt())
 
-    var mTouchCenterRation: Float = 0.3f
+    var mTouchCenterRation: Float = 0.2f
     var mTouchOutArea: Boolean = false
 
     var mCallback: Callback? = null
@@ -87,16 +89,20 @@ open class RockerView(context: Context, attrs: AttributeSet): View(context, attr
             val subY = abs(mBackPoint.y - event.y)
             val distance = subX * subX + subY * subY
             if (distance <= mRadius * mRadius) {
-                if (distance > mRadius * mRadius * mTouchCenterRation * mTouchCenterRation) {
-                    mTouchOutArea = true
-                }
                 mCallback?.let { call ->
-                    val x: Int = (65535 * (event.x - mRadius) / mRadius).toInt()
-                    val y: Int = (65535 * (mRadius - event.y) / mRadius).toInt()
+                    var x: Int = (100 * (event.x - mRadius) / mRadius).toInt()
+                    var y: Int = (100 * (mRadius - event.y) / mRadius).toInt()
+                    x = max(-100, x)
+                    x = min(100, x)
+                    y = max(-100, y)
+                    y = min(100, y)
                     call.move(x, y, event.action)
                 }
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
+                        if (distance > mRadius * mRadius * mTouchCenterRation * mTouchCenterRation) {
+                            mTouchOutArea = true
+                        }
                         if (!mTouchOutArea) {
                             mCallback?.click(event.action)
                         }
@@ -133,8 +139,12 @@ open class RockerView(context: Context, attrs: AttributeSet): View(context, attr
                         x /= ratio
                         y /= ratio
                         mCallback?.let { call ->
-                            val ex: Int = (65535 * x / mRadius).toInt()
-                            val ey: Int = (65535 * y / mRadius).toInt()
+                            var ex: Int = (100 * x / mRadius).toInt()
+                            var ey: Int = (100 * y / mRadius).toInt()
+                            ex = max(-100, ex)
+                            ex = min(100, ex)
+                            ey = max(-100, ey)
+                            ey = min(100, ey)
                             call.move(ex, ey, event.action)
                         }
                         mFrontPoint.x = (x + mRadius).toInt()
@@ -151,8 +161,12 @@ open class RockerView(context: Context, attrs: AttributeSet): View(context, attr
                         x /= ratio
                         y /= ratio
                         mCallback?.let { call ->
-                            val ex: Int = (65535 * x / mRadius).toInt()
-                            val ey: Int = (65535 * y / mRadius).toInt()
+                            var ex: Int = (100 * x / mRadius).toInt()
+                            var ey: Int = (100 * y / mRadius).toInt()
+                            ex = max(-100, ex)
+                            ex = min(100, ex)
+                            ey = max(-100, ey)
+                            ey = min(100, ey)
                             call.move(ex, ey, event.action)
                         }
                         invalidate()
