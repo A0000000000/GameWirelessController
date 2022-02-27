@@ -49,7 +49,7 @@ open class RockerView(context: Context, attrs: AttributeSet): View(context, attr
         private set
     var mFrontPoint: Point = Point(mRadius.toInt(), mRadius.toInt())
 
-    var mTouchCenterRation: Float = 0.2f
+    var mTouchCenterRation: Float = 0.3f
     var mTouchOutArea: Boolean = false
 
     var mCallback: Callback? = null
@@ -107,6 +107,8 @@ open class RockerView(context: Context, attrs: AttributeSet): View(context, attr
                     MotionEvent.ACTION_MOVE -> {
                         if (!mTouchOutArea) {
                             mCallback?.click(event.action)
+                        } else {
+                            mCallback?.click(MotionEvent.ACTION_UP)
                         }
                         mFrontPoint.x = event.x.toInt()
                         mFrontPoint.y = event.y.toInt()
@@ -143,6 +145,16 @@ open class RockerView(context: Context, attrs: AttributeSet): View(context, attr
                         mFrontPoint.x = mBackPoint.x
                         mFrontPoint.y = mBackPoint.y
                         mTouchOutArea = false
+                        var x = event.x - mRadius
+                        var y = mRadius - event.y
+                        val ratio = sqrt(distance / (mRadius * mRadius))
+                        x /= ratio
+                        y /= ratio
+                        mCallback?.let { call ->
+                            val ex: Int = (65535 * x / mRadius).toInt()
+                            val ey: Int = (65535 * y / mRadius).toInt()
+                            call.move(ex, ey, event.action)
+                        }
                         invalidate()
                     }
                 }
