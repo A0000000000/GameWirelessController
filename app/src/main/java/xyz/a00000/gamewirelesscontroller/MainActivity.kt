@@ -10,13 +10,13 @@ import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.textview.MaterialTextView
-import xyz.a00000.bluetoothconnectlib.BluetoothController
+import xyz.a00000.connectionserviceclient.internal.ConnectionServiceController
 
-class MainActivity : AppCompatActivity() {
+class MainActivity: AppCompatActivity() {
 
-    private val mBluetoothController: BluetoothController = BluetoothController.getInstance()
+    private val mConnectionController = ConnectionServiceController.getInstance()
 
-    var mDevices: Set<String>? = null
+    var mDevices: List<String>? = null
 
     var mTvTitle: TextView? = null
     var mLvDevices: ListView? = null
@@ -33,11 +33,11 @@ class MainActivity : AppCompatActivity() {
             if (permission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 0)
             } else {
-                mDevices = mBluetoothController.pairedDevicesName
+                mDevices = mConnectionController.pairedDevicesName
             }
         }
-        if (!mBluetoothController.isSupportBluetooth) {
-            if (!mBluetoothController.enable()) {
+        if (!mConnectionController.isSupportBluetooth) {
+            if (!mConnectionController.enable()) {
                 Toast.makeText(this, "请先打开蓝牙!", Toast.LENGTH_SHORT).show()
                 finish()
             }
@@ -47,12 +47,12 @@ class MainActivity : AppCompatActivity() {
         mLvDevices = findViewById(R.id.lv_devices)
         mBtnController = findViewById(R.id.btn_controller)
         mTvFlush?.setOnClickListener {
-            mDevices = mBluetoothController.pairedDevicesName
+            mDevices = mConnectionController.pairedDevicesName
             initListViewData()
         }
         initListViewData()
         mBtnController?.setOnClickListener {
-            val controllerIntent = Intent(this@MainActivity, ControllerActivity::class.java)
+            val controllerIntent = Intent(this@MainActivity, JoystickActivity::class.java)
             controllerIntent.putExtra("targetDevice", mTargetDevice)
             startActivity(controllerIntent)
         }
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "缺少必要权限!", Toast.LENGTH_SHORT).show()
                 finish()
             } else {
-                mDevices = mBluetoothController.pairedDevicesName
+                mDevices = mConnectionController.pairedDevicesName
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

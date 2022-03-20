@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="A">0</integer>
+    <integer name="B">1</integer>
+    <integer name="X">2</integer>
+    <integer name="Y">3</integer>
+
+    <integer name="LEFT">4</integer>
+    <integer name="TOP">5</integer>
+    <integer name="RIGHT">6</integer>
+    <integer name="BOTTOM">7</integer>
+
+    <integer name="LEFT_BUTTON">8</integer>
+    <integer name="RIGHT_BUTTON">9</integer>
+
+    <integer name="MENU">12</integer>
+    <integer name="VIEW">13</integer>
+    <integer name="MAIN">14</integer>
+    <integer name="FUNCTION">15</integer>
+
+    <integer name="LEFT_ROCKER">0</integer>
+    <integer name="RIGHT_ROCKER">1</integer>
+
+    <integer name="LEFT_TRIGGER">0</integer>
+    <integer name="RIGHT_TRIGGER">1</integer>
+
+</resources>

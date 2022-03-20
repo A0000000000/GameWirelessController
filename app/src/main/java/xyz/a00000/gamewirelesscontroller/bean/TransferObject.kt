@@ -1,40 +1,26 @@
 package xyz.a00000.gamewirelesscontroller.bean
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
+import xyz.a00000.joystickcustomview.bean.GameEvent
 
-@JsonNaming( PropertyNamingStrategies.UpperCamelCaseStrategy::class)
-open class TransferObject  constructor(data: Map<String, Any>?, type: Int, message: String) {
+@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy::class)
+open class TransferObject constructor(event: GameEvent?, type: Int?, message: String?) {
 
     companion object {
 
         @JvmStatic
-        val objectMapper = ObjectMapper()
-
+        val TYPE_GAME_EVENT = 0
         @JvmStatic
-        fun fromJson(json: String): TransferObject {
-            return objectMapper.readValue(json, TransferObject::class.java)
-        }
+        val TYPE_JOYSTICK_EVENT = 1;
 
     }
 
-    constructor(): this(null, 0, "") {
+    constructor() : this(null,null,null){}
 
-    }
-
-    var data: Map<String, Any>? = null
-    var type: Int = 0
-    var message: String = ""
-
-    init {
-        this.data = data
-        this.type = type
-        this.message = message
-    }
-
-    fun toJson(): String {
-        return objectMapper.writeValueAsString(this)
-    }
+    var gameEvent: GameEvent? = event
+    var joystickEvent: JoystickEvent? = null
+    var type:Int? = type
+    var message: String? = message
 
 }

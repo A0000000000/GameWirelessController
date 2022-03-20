@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="RockerView">
+        <attr name="rv_radius" format="float"/>
+        <attr name="rv_type" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="CrossKeyView">
+        <attr name="ckv_landscape" format="boolean"/>
+        <attr name="ckv_long" format="integer"/>
+        <attr name="ckv_wide" format="integer"/>
+        <attr name="ckv_type" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="TriggerButton">
+        <attr name="tb_length" format="integer"/>
+        <attr name="tb_high" format="integer"/>
+        <attr name="tb_font_color" format="color"/>
+        <attr name="tb_direction" format="boolean"/>
+        <attr name="tb_type" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="SimpleButton">
+        <attr name="sb_radius" format="integer"/>
+        <attr name="sb_background_color" format="color"/>
+        <attr name="sb_font_color" format="color"/>
+        <attr name="sb_type" format="integer"/>
+    </declare-styleable>
+
+</resources>

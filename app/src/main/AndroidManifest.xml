@@ -17,10 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GameWirelessController">
         <activity
-            android:name=".ControllerActivity"
+            android:name=".JoystickActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"/>
+            android:screenOrientation="sensorLandscape"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -4,7 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Project/GameWirelessController/app/src/main/res/layout/activity_controller.xml" value="0.25" />
+        <entry key="..\:/Project/GameWirelessController/app/src/main/res/layout/activity_joystick.xml" value="0.3619791666666667" />
         <entry key="..\:/Project/GameWirelessController/app/src/main/res/layout/activity_main.xml" value="0.20208333333333334" />
+        <entry key="..\:/Project/GameWirelessController/joystickgui/src/main/res/layout/activity_joystick.xml" value="0.3619791666666667" />
+        <entry key="..\:/Project/GameWirelessController/joystickgui/src/main/res/layout/activity_main.xml" value="0.3619791666666667" />
       </map>
     </option>
   </component>
