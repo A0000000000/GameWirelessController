@@ -25,4 +25,11 @@ public class JsonUtils {
     }
 
 
+    public static <T> T fromJson(String json, Class<T> clazz) {
+        try {
+            return objectMapper.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
 }

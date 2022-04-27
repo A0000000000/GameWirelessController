@@ -1,6 +1,7 @@
 package xyz.a00000.connectionserviceclient.internal;
 
 import android.bluetooth.BluetoothSocket;
+import android.util.Log;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -22,15 +23,13 @@ public class ConnectionServiceClient implements Closeable {
     private OutputStream os;
     private OnDataReadyRead onDataReadyRead;
     private OnReadException onReadException;
-    private OnDisconnected onDisconnected;
     private Thread mReadThread;
 
-    public void init(OnDataReadyRead onDataReadyRead, OnReadException onReadException, OnDisconnected onDisconnected) throws IOException {
+    public void init(OnDataReadyRead onDataReadyRead, OnReadException onReadException) throws IOException {
         is = mBluetoothSocket.getInputStream();
         os = mBluetoothSocket.getOutputStream();
         this.onDataReadyRead = onDataReadyRead;
         this.onReadException = onReadException;
-        this.onDisconnected = onDisconnected;
         initRead();
     }
 
@@ -60,6 +59,7 @@ public class ConnectionServiceClient implements Closeable {
     public void write(byte[] data) throws IOException {
         if (data != null) {
             byte[] size = ByteLengthUtils.getLengthArray(data.length);
+            Log.d("WRITE", "size = " + data.length);
             os.write(size);
             os.write(data);
             os.flush();
@@ -69,10 +69,6 @@ public class ConnectionServiceClient implements Closeable {
     @Override
     public void close() throws IOException {
         mBluetoothSocket.close();
-    }
-
-    public interface OnDisconnected {
-        void onDisconnected();
     }
 
 }

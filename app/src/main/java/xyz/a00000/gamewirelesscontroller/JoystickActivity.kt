@@ -9,6 +9,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.provider.Settings
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -21,6 +22,7 @@ import xyz.a00000.connectionserviceclient.internal.ConnectionServiceController
 import xyz.a00000.connectionserviceclient.internal.ConnectionServiceFactory
 import xyz.a00000.gamewirelesscontroller.bean.JoystickEvent
 import xyz.a00000.gamewirelesscontroller.bean.TransferObject
+import xyz.a00000.gamewirelesscontroller.config.Config
 import xyz.a00000.gamewirelesscontroller.event.EventHub
 import xyz.a00000.joystickcustomview.bean.GameEvent
 import xyz.a00000.joystickcustomview.bean.Xbox360Type
@@ -45,10 +47,7 @@ class JoystickActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_joystick)
 
-        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
-            controller.hide(WindowInsetsCompat.Type.systemBars())
-            controller.hide(WindowInsetsCompat.Type.statusBars())
-        }
+        hideSystemBars()
 
         mTvLog = findViewById(R.id.tv_log)
         mTvTips = findViewById(R.id.tv_tips)
@@ -63,17 +62,30 @@ class JoystickActivity : AppCompatActivity() {
         mTargetDevice = intent.getStringExtra("targetDevice")
         mTvTips?.text = String.format("%s - %s", TIPS, mTargetDevice)
 
+        Config.DEVICE_NAME = mTargetDevice
+
         initEventSystem()
         initSensorSystem()
 
     }
 
-    var mConnectionController = ConnectionServiceController.getInstance()
-    var mConnectionFactory: ConnectionServiceFactory? = null
-    var mConnectionServiceClient: ConnectionServiceClientDecorator<TransferObject>? = null
+    private fun hideSystemBars() {
+        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.hide(WindowInsetsCompat.Type.statusBars())
+        }
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        hideSystemBars()
+        return super.onTouchEvent(event)
+    }
+
     var mEventHub: EventHub? = null
     var mCallback: Callback? = object : Callback {
         override fun event(ev: GameEvent) {
+            hideSystemBars()
+            onGameEvent(ev)
             mEventHub?.postGameEvent(ev)
         }
     }
@@ -81,32 +93,21 @@ class JoystickActivity : AppCompatActivity() {
     private fun initEventSystem() {
         Thread {
             try {
-                mConnectionFactory = mConnectionController.createServiceFactory(mTargetDevice)
-                mConnectionServiceClient = ConnectionServiceClientDecorator(
-                    Settings.Global.DEVICE_NAME,
-                    mConnectionFactory?.getConnectionServiceClient(UUID)
-                )
-                mEventHub = EventHub(mConnectionServiceClient, object : EventHub.OnEventReady {
-                    override fun eventReady(ev: GameEvent) {
-                        runOnUiThread {
-                            onGameEvent(ev)
-                        }
-                    }
-                }, object : EventHub.OnDisconnected {
+                mEventHub = EventHub(object : EventHub.OnDisconnected {
                     override fun onDisconnected() {
                         finish()
                     }
-                }, {
-                    it?.let { to ->
-                        if (to.type == TransferObject.TYPE_JOYSTICK_EVENT) {
-                            runOnUiThread {
-                                onJoystickEvent(to.joystickEvent)
-                            }
+                }, object: EventHub.OnJoystickEvent {
+
+                    override fun onJoystickEvent(je: JoystickEvent?) {
+                        runOnUiThread {
+                            this@JoystickActivity.onJoystickEvent(je)
                         }
                     }
-                }, {
 
-                })
+                }) {
+                    finish()
+                }
                 runOnUiThread {
                     Toast.makeText(
                         this@JoystickActivity,
@@ -150,6 +151,11 @@ class JoystickActivity : AppCompatActivity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         initCustomizationView()
         super.onWindowFocusChanged(hasFocus)
+    }
+
+    override fun onContentChanged() {
+        initCustomizationView()
+        super.onContentChanged()
     }
 
     private fun initCustomizationView() {
@@ -325,17 +331,15 @@ class JoystickActivity : AppCompatActivity() {
 
     companion object {
         @JvmStatic
-        val UUID = "6ef82393-6cab-4749-b0b5-df0109fb7dec"
-        @JvmStatic
-        val TAG = "ControllerActivity"
-        @JvmStatic
         val TIPS = "Game Wireless Controller"
         @JvmStatic
         val ENABLE = true
     }
 
     private fun onGameEvent(ev: GameEvent) {
-//        mTvLog?.text = JsonUtils.toJson(ev)
+        if (ev.eventType != Xbox360Type.AXIS) {
+            vibrate()
+        }
     }
 
     private fun onJoystickEvent(ev: JoystickEvent?) {
