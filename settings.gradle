@@ -10,4 +10,3 @@ rootProject.name = "Game Wireless Controller"
 include ':app'
 include ':ConnectionServiceClient'
 include ':JoystickCustomView'
-include ':LiteRPC'
