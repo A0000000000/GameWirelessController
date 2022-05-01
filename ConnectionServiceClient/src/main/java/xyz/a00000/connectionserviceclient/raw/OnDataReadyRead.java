@@ -1,4 +1,4 @@
-package xyz.a00000.connectionserviceclient.internal;
+package xyz.a00000.connectionserviceclient.raw;
 
 public interface OnDataReadyRead {
 

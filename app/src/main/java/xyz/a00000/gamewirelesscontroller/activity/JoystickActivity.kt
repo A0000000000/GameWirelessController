@@ -1,13 +1,17 @@
-package xyz.a00000.gamewirelesscontroller
+package xyz.a00000.gamewirelesscontroller.activity
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.IBinder
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.provider.Settings
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.widget.LinearLayout
@@ -17,13 +21,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import xyz.a00000.connectionserviceclient.ConnectionServiceClientDecorator
-import xyz.a00000.connectionserviceclient.internal.ConnectionServiceController
-import xyz.a00000.connectionserviceclient.internal.ConnectionServiceFactory
+import xyz.a00000.gamewirelesscontroller.R
 import xyz.a00000.gamewirelesscontroller.bean.JoystickEvent
-import xyz.a00000.gamewirelesscontroller.bean.TransferObject
-import xyz.a00000.gamewirelesscontroller.config.Config
-import xyz.a00000.gamewirelesscontroller.event.EventHub
+import xyz.a00000.gamewirelesscontroller.service.ConnectionService
 import xyz.a00000.joystickcustomview.bean.GameEvent
 import xyz.a00000.joystickcustomview.bean.Xbox360Type
 import xyz.a00000.joystickcustomview.view.*
@@ -32,22 +32,47 @@ import kotlin.math.min
 
 class JoystickActivity : AppCompatActivity() {
 
-    var mTvLog: TextView? = null
-    var mTvTips: TextView? = null
-    var mLeftButtonPanel: LinearLayout? = null
-    var mRightButtonPanel: LinearLayout? = null
-    var mLeftPanel: RelativeLayout? = null
-    var mRightPanel: RelativeLayout? = null
-    var mCenterPanel: RelativeLayout? = null
-    var mTargetDevice: String? = null
-    var mSensorManager: SensorManager? = null
-    var mSensor:Sensor? = null
+    private var mTvLog: TextView? = null
+    private var mTvTips: TextView? = null
+    private var mLeftButtonPanel: LinearLayout? = null
+    private var mRightButtonPanel: LinearLayout? = null
+    private var mLeftPanel: RelativeLayout? = null
+    private var mRightPanel: RelativeLayout? = null
+    private var mCenterPanel: RelativeLayout? = null
+    private var mSensorManager: SensorManager? = null
+    private var mSensor:Sensor? = null
+    private var mConnectionService: ConnectionService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_joystick)
 
         hideSystemBars()
+
+        bindService(Intent(this, ConnectionService::class.java), object: ServiceConnection {
+            override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
+                runOnUiThread {
+                    Toast.makeText(this@JoystickActivity, "服务获取成功, 准备初始化.", Toast.LENGTH_SHORT).show()
+                }
+                mConnectionService = (p1 as ConnectionService.LocalBinder).getService()
+                mConnectionService?.mOnConnectedSuccess = Runnable {
+                    runOnUiThread {
+                        Toast.makeText(this@JoystickActivity, "连接成功.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                mConnectionService?.mOnConnectedFailed = Runnable {
+                    runOnUiThread {
+                        Toast.makeText(this@JoystickActivity, "连接失败, 请检查服务端是否启动.", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                }
+                initEventSystem()
+            }
+
+            override fun onServiceDisconnected(p0: ComponentName?) {
+
+            }
+        }, Context.BIND_AUTO_CREATE)
 
         mTvLog = findViewById(R.id.tv_log)
         mTvTips = findViewById(R.id.tv_tips)
@@ -59,12 +84,7 @@ class JoystickActivity : AppCompatActivity() {
         mLeftPanel = findViewById(R.id.left_panel)
         mRightPanel = findViewById(R.id.right_panel)
         mCenterPanel = findViewById(R.id.center_panel)
-        mTargetDevice = intent.getStringExtra("targetDevice")
-        mTvTips?.text = String.format("%s - %s", TIPS, mTargetDevice)
 
-        Config.DEVICE_NAME = mTargetDevice
-
-        initEventSystem()
         initSensorSystem()
 
     }
@@ -81,58 +101,33 @@ class JoystickActivity : AppCompatActivity() {
         return super.onTouchEvent(event)
     }
 
-    var mEventHub: EventHub? = null
-    var mCallback: Callback? = object : Callback {
+    private val mCallback: Callback = object : Callback {
         override fun event(ev: GameEvent) {
             hideSystemBars()
             onGameEvent(ev)
-            mEventHub?.postGameEvent(ev)
         }
     }
 
     private fun initEventSystem() {
         Thread {
-            try {
-                mEventHub = EventHub(object : EventHub.OnDisconnected {
-                    override fun onDisconnected() {
-                        finish()
+            mConnectionService?.setInitData(object: ConnectionService.OnJoystickEvent {
+                override fun onJoystickEvent(ev: JoystickEvent?) {
+                    runOnUiThread {
+                        this@JoystickActivity.onJoystickEvent(ev)
                     }
-                }, object: EventHub.OnJoystickEvent {
-
-                    override fun onJoystickEvent(je: JoystickEvent?) {
-                        runOnUiThread {
-                            this@JoystickActivity.onJoystickEvent(je)
-                        }
-                    }
-
-                }) {
-                    finish()
                 }
-                runOnUiThread {
-                    Toast.makeText(
-                        this@JoystickActivity,
-                        "初始化完成!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } catch (e: Exception) {
-                runOnUiThread {
-                    Toast.makeText(
-                        this@JoystickActivity,
-                        "连接失败, 请检查服务端是否已经启动.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                finish()
-            }
+            })
         }.start()
+        runOnUiThread {
+            mTvTips?.text = String.format("%s - %s", TIPS, mConnectionService?.mTargetDeviceName)
+        }
     }
 
-    var mSensorEventListener = object: SensorEventListener{
+    private var mSensorEventListener = object: SensorEventListener{
         override fun onSensorChanged(e: SensorEvent?) {
             if (e?.accuracy != 0) {
                 if (e?.sensor?.type == Sensor.TYPE_GYROSCOPE) {
-
+                    // Todo: todo something
                 }
             }
         }
@@ -153,10 +148,6 @@ class JoystickActivity : AppCompatActivity() {
         super.onWindowFocusChanged(hasFocus)
     }
 
-    override fun onContentChanged() {
-        initCustomizationView()
-        super.onContentChanged()
-    }
 
     private fun initCustomizationView() {
         initTriggerAndButton()
@@ -165,10 +156,10 @@ class JoystickActivity : AppCompatActivity() {
         initCenterButton()
     }
 
-    var mLeftButton: SimpleButton? = null
-    var mRightButton: SimpleButton? = null
-    var mLeftTrigger: TriggerButton? = null
-    var mRightTrigger: TriggerButton? = null
+    private var mLeftButton: SimpleButton? = null
+    private var mRightButton: SimpleButton? = null
+    private var mLeftTrigger: TriggerButton? = null
+    private var mRightTrigger: TriggerButton? = null
 
     private fun initTriggerAndButton() {
         mLeftButton = findViewById(R.id.sb_lb)
@@ -194,11 +185,11 @@ class JoystickActivity : AppCompatActivity() {
         mRightTrigger?.mCallback = mCallback
     }
 
-    var mLeftRockerView: RockerView? = null
-    var mTopCrossKey: CrossKeyView? = null
-    var mLeftCrossKey: CrossKeyView? = null
-    var mBottomCrossKey: CrossKeyView? = null
-    var mRightCrossKey: CrossKeyView? = null
+    private var mLeftRockerView: RockerView? = null
+    private var mTopCrossKey: CrossKeyView? = null
+    private var mLeftCrossKey: CrossKeyView? = null
+    private var mBottomCrossKey: CrossKeyView? = null
+    private var mRightCrossKey: CrossKeyView? = null
 
     private fun initLeftPanel() {
         mLeftRockerView = findViewById(R.id.rv_left)
@@ -228,11 +219,11 @@ class JoystickActivity : AppCompatActivity() {
         mRightCrossKey?.mCallback = mCallback
     }
 
-    var mRightRockerView: RockerView? = null
-    var mX: SimpleButton? = null
-    var mY: SimpleButton? = null
-    var mA: SimpleButton? = null
-    var mB: SimpleButton? = null
+    private var mRightRockerView: RockerView? = null
+    private var mX: SimpleButton? = null
+    private var mY: SimpleButton? = null
+    private var mA: SimpleButton? = null
+    private var mB: SimpleButton? = null
 
     private fun initRightPanel() {
         mRightRockerView = findViewById(R.id.rv_right)
@@ -258,10 +249,10 @@ class JoystickActivity : AppCompatActivity() {
         mB?.mCallback = mCallback
     }
 
-    var mMain: SimpleButton? = null
-    var mFunction: SimpleButton? = null
-    var mView: SimpleButton? = null
-    var mMenu: SimpleButton? = null
+    private var mMain: SimpleButton? = null
+    private var mFunction: SimpleButton? = null
+    private var mView: SimpleButton? = null
+    private var mMenu: SimpleButton? = null
 
     private fun initCenterButton() {
         mMain = findViewById(R.id.sb_main)
@@ -281,7 +272,7 @@ class JoystickActivity : AppCompatActivity() {
         mView?.mCallback = mCallback
     }
 
-    var mFirstVolumeDown = true
+    private var mFirstVolumeDown = true
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (ENABLE) {
@@ -337,8 +328,9 @@ class JoystickActivity : AppCompatActivity() {
     }
 
     private fun onGameEvent(ev: GameEvent) {
-        if (ev.eventType != Xbox360Type.AXIS) {
-            vibrate()
+        mConnectionService?.sendGameEvent(ev)
+        if (ev.eventType != Xbox360Type.AXIS && ev.eventType != Xbox360Type.TRIGGER) {
+             vibrate()
         }
     }
 
@@ -353,8 +345,9 @@ class JoystickActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        mEventHub?.close()
+        mConnectionService?.closeConnection()
         super.onDestroy()
     }
+
 
 }

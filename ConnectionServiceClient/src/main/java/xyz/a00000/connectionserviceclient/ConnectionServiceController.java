@@ -1,4 +1,4 @@
-package xyz.a00000.connectionserviceclient.internal;
+package xyz.a00000.connectionserviceclient;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -6,6 +6,9 @@ import android.bluetooth.BluetoothDevice;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import xyz.a00000.connectionserviceclient.raw.ConnectionServiceFactory;
+import xyz.a00000.connectionserviceclient.template.ConnectionServiceFactoryTemplate;
 
 public class ConnectionServiceController {
 
@@ -50,12 +53,8 @@ public class ConnectionServiceController {
         return new ConnectionServiceFactory(getBluetoothDeviceByName(deviceName));
     }
 
-    public boolean isSupportBluetooth() {
-        return mBluetoothAdapter.isEnabled();
-    }
-
-    public boolean enable() {
-        return mBluetoothAdapter.enable();
+    public static <T> ConnectionServiceFactoryTemplate<T> makeTemplateFactory(ConnectionServiceFactory factory, Class<T> clazz) {
+        return new ConnectionServiceFactoryTemplate<>(clazz, factory);
     }
 
 }

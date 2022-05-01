@@ -1,7 +1,6 @@
-package xyz.a00000.connectionserviceclient.internal;
+package xyz.a00000.connectionserviceclient.raw;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -18,6 +17,5 @@ public class ConnectionServiceFactory {
     public ConnectionServiceClient getConnectionServiceClient(String uuid) throws IOException {
         return new ConnectionServiceClient(mBluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(uuid)));
     }
-
 
 }

@@ -1,59 +1,92 @@
 package xyz.a00000.gamewirelesscontroller
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.textview.MaterialTextView
-import xyz.a00000.connectionserviceclient.internal.ConnectionServiceController
+import xyz.a00000.gamewirelesscontroller.activity.JoystickActivity
+import xyz.a00000.gamewirelesscontroller.service.ConnectionService
+import java.util.stream.Collectors
 
 class MainActivity: AppCompatActivity() {
 
-    private val mConnectionController = ConnectionServiceController.getInstance()
+    private var mBluetoothAdapter: BluetoothAdapter? = null
 
-    var mDevices: List<String>? = null
+    private var mDevices: List<String>? = null
 
-    var mTvTitle: TextView? = null
-    var mLvDevices: ListView? = null
-    var mBtnController: Button? = null
-    var mTvFlush: TextView? = null
+    private var mTvTitle: TextView? = null
+    private var mLvDevices: ListView? = null
+    private var mBtnController: Button? = null
+    private var mTvFlush: TextView? = null
 
-    var mTargetDevice: String? = null
+    private var mTargetDevice: String? = null
+
+    private var mConnectionService: ConnectionService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mBluetoothAdapter = getSystemService(BluetoothManager::class.java).adapter
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
             if (permission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 0)
             } else {
-                mDevices = mConnectionController.pairedDevicesName
+                mBluetoothAdapter?.run {
+                    mDevices = bondedDevices.stream().map(BluetoothDevice::getName).collect(Collectors.toList())
+                }
             }
         }
-        if (!mConnectionController.isSupportBluetooth) {
-            if (!mConnectionController.enable()) {
-                Toast.makeText(this, "请先打开蓝牙!", Toast.LENGTH_SHORT).show()
-                finish()
+        mBluetoothAdapter?.run {
+            if (!isEnabled) {
+                if (!enable()) {
+                    Toast.makeText(this@MainActivity, "请先打开蓝牙!", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
             }
         }
+
+        bindService(Intent(this, ConnectionService::class.java), object: ServiceConnection {
+            override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
+                mConnectionService = (p1 as ConnectionService.LocalBinder).getService()
+            }
+
+            override fun onServiceDisconnected(p0: ComponentName?) {
+
+            }
+        }, Context.BIND_AUTO_CREATE)
         mTvTitle = findViewById(R.id.tv_title)
         mTvFlush = findViewById(R.id.tv_flush)
         mLvDevices = findViewById(R.id.lv_devices)
         mBtnController = findViewById(R.id.btn_controller)
         mTvFlush?.setOnClickListener {
-            mDevices = mConnectionController.pairedDevicesName
+            mBluetoothAdapter?.run {
+                mDevices = bondedDevices.stream().map(BluetoothDevice::getName).collect(Collectors.toList())
+            }
             initListViewData()
         }
         initListViewData()
         mBtnController?.setOnClickListener {
+            if (mConnectionService == null) {
+                Toast.makeText(this@MainActivity, "服务未启动, 请稍后重试.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            mConnectionService?.mTargetDeviceName = mTargetDevice
             val controllerIntent = Intent(this@MainActivity, JoystickActivity::class.java)
-            controllerIntent.putExtra("targetDevice", mTargetDevice)
             startActivity(controllerIntent)
         }
         mBtnController?.isEnabled = false
@@ -66,7 +99,9 @@ class MainActivity: AppCompatActivity() {
                 Toast.makeText(this, "缺少必要权限!", Toast.LENGTH_SHORT).show()
                 finish()
             } else {
-                mDevices = mConnectionController.pairedDevicesName
+                mBluetoothAdapter?.run {
+                    mDevices = bondedDevices.stream().map(BluetoothDevice::getName).collect(Collectors.toList())
+                }
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
