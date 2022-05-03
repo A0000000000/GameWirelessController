@@ -15,108 +15,49 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/left_button_panel"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="horizontal"
-            tools:ignore="NestedWeights">
+            android:layout_weight="2">
 
-            <xyz.a00000.joystickcustomview.view.TriggerButton
-                android:id="@+id/tb_lt"
-                android:layout_width="0dp"
-                android:layout_weight="8"
-                android:text="LT"
-                app:tb_type="@integer/LEFT_TRIGGER"
-                app:tb_direction="false"
-                android:layout_height="wrap_content"/>
+            <xyz.a00000.joystickcustomview.group.LeftTopGroup
+                android:id="@+id/ltg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
-            <xyz.a00000.joystickcustomview.view.SimpleButton
-                android:id="@+id/sb_lb"
-                android:layout_width="0dp"
-                android:layout_weight="2"
-                android:text="LB"
-                app:sb_type="@integer/LEFT_BUTTON"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
+        </FrameLayout>
 
         <RelativeLayout
-            android:id="@+id/left_panel"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="8">
+            android:layout_weight="4">
 
-            <LinearLayout
+            <xyz.a00000.joystickcustomview.view.Rocker
+                android:id="@+id/r_left_rocker"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                app:r_type="@integer/LEFT_ROCKER"/>
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
-                    <xyz.a00000.joystickcustomview.view.RockerView
-                        android:id="@+id/rv_left"
-                        app:rv_type="@integer/LEFT_ROCKER"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"/>
-                </FrameLayout>
+        </RelativeLayout>
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true">
+            <xyz.a00000.joystickcustomview.group.CrossKeyGroup
+                android:id="@+id/ckg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"/>
 
-                        <xyz.a00000.joystickcustomview.view.CrossKeyView
-                            android:id="@+id/ckv_t"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_toLeftOf="@+id/ckv_r"
-                            app:ckv_type="@integer/TOP"
-                            app:ckv_landscape="false"/>
-
-                        <xyz.a00000.joystickcustomview.view.CrossKeyView
-                            android:id="@+id/ckv_b"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_toLeftOf="@+id/ckv_r"
-                            app:ckv_type="@integer/BOTTOM"
-                            app:ckv_landscape="false"/>
-
-                        <xyz.a00000.joystickcustomview.view.CrossKeyView
-                            android:id="@+id/ckv_l"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@+id/ckv_t"
-                            app:ckv_type="@integer/LEFT"
-                            android:layout_centerVertical="true"/>
-
-                        <xyz.a00000.joystickcustomview.view.CrossKeyView
-                            android:id="@+id/ckv_r"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            app:ckv_type="@integer/RIGHT"
-                            android:layout_centerVertical="true"/>
-
-                    </RelativeLayout>
-                </FrameLayout>
-            </LinearLayout>
         </RelativeLayout>
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_weight="3"
@@ -140,46 +81,14 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/center_panel"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3">
 
-            <xyz.a00000.joystickcustomview.view.SimpleButton
-                android:id="@+id/sb_main"
-                android:text="Main"
-                app:sb_type="@integer/MAIN"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <xyz.a00000.joystickcustomview.view.SimpleButton
-                android:id="@+id/sb_view"
-                android:text="View"
-                app:sb_type="@integer/VIEW"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <xyz.a00000.joystickcustomview.view.SimpleButton
-                android:id="@+id/sb_menu"
-                android:text="Menu"
-                app:sb_type="@integer/MENU"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <xyz.a00000.joystickcustomview.view.SimpleButton
-                android:id="@+id/sb_function"
-                android:text="Function"
-                app:sb_type="@integer/FUNCTION"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+            <xyz.a00000.joystickcustomview.group.OperatorPanelGroup
+                android:id="@+id/opg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
         </RelativeLayout>
 
@@ -204,115 +113,42 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/right_button_panel"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="horizontal"
-            tools:ignore="NestedWeights">
-
-
-            <xyz.a00000.joystickcustomview.view.SimpleButton
-                android:id="@+id/sb_rb"
-                android:layout_width="0dp"
-                android:layout_weight="2"
-                android:text="RB"
-                app:sb_type="@integer/RIGHT_BUTTON"
-                android:layout_height="wrap_content"/>
-
-            <xyz.a00000.joystickcustomview.view.TriggerButton
-                android:id="@+id/tb_rt"
-                android:layout_width="0dp"
-                android:layout_weight="8"
-                android:text="RT"
-                app:tb_direction="true"
-                app:tb_type="@integer/RIGHT_TRIGGER"
-                android:layout_height="wrap_content"/>
-
-
-        </LinearLayout>
+            android:layout_weight="2">
+            <xyz.a00000.joystickcustomview.group.RightTopGroup
+                android:id="@+id/rtg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
 
         <RelativeLayout
-            android:id="@+id/right_panel"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="8">
+            android:layout_weight="4">
 
-            <LinearLayout
+            <xyz.a00000.joystickcustomview.group.ABXYGroup
+                android:id="@+id/abxy"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"/>
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
+        </RelativeLayout>
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="true">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4">
 
-                        <xyz.a00000.joystickcustomview.view.SimpleButton
-                            android:id="@+id/sb_y"
-                            android:text="Y"
-                            app:sb_type="@integer/Y"
-                            app:sb_font_color="#FFFF00"
-                            android:layout_alignParentTop="true"
-                            android:layout_toLeftOf="@+id/sb_b"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                        <xyz.a00000.joystickcustomview.view.SimpleButton
-                            android:id="@+id/sb_x"
-                            android:text="X"
-                            app:sb_type="@integer/X"
-                            app:sb_font_color="#0000FF"
-                            android:layout_toLeftOf="@+id/sb_a"
-                            android:layout_centerVertical="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                        <xyz.a00000.joystickcustomview.view.SimpleButton
-                            android:id="@+id/sb_a"
-                            android:text="A"
-                            app:sb_type="@integer/A"
-                            app:sb_font_color="#008000"
-                            android:layout_alignParentBottom="true"
-                            android:layout_toLeftOf="@+id/sb_b"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                        <xyz.a00000.joystickcustomview.view.SimpleButton
-                            android:id="@+id/sb_b"
-                            android:text="B"
-                            app:sb_type="@integer/B"
-                            app:sb_font_color="#FF0000"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                    </RelativeLayout>
-
-                </FrameLayout>
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
-                    <xyz.a00000.joystickcustomview.view.RockerView
-                        android:id="@+id/rv_right"
-                        app:rv_type="@integer/RIGHT_ROCKER"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentLeft="true"/>
-                </FrameLayout>
-
-            </LinearLayout>
+            <xyz.a00000.joystickcustomview.view.Rocker
+                android:id="@+id/r_right_rocker"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                app:r_type="@integer/RIGHT_ROCKER"/>
 
         </RelativeLayout>
 

@@ -4,6 +4,5 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 
 @JsonNaming( PropertyNamingStrategies.UpperCamelCaseStrategy::class)
-open class GameEvent(var eventType: Int) {
-
+class TriggerEvent(var value: Int, var type: Int): GameEvent(Xbox360Type.TRIGGER) {
 }
