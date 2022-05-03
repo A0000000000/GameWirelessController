@@ -90,6 +90,7 @@ class Trigger(context: Context, attrs: AttributeSet): AppCompatTextView(context,
                         } else {
                             mFrontRect.bottom = (mRect.bottom * ratio).toInt()
                         }
+                        mCallback?.event(TriggerEvent((100 * ratio).toInt(), mType))
                     } else {
                         if (mFlag) {
                             mFrontRect.left = (mRect.right * ratio).toInt()
@@ -98,8 +99,9 @@ class Trigger(context: Context, attrs: AttributeSet): AppCompatTextView(context,
                             mFrontRect.top = (mRect.bottom * ratio).toInt()
                             mFrontRect.bottom = mRect.bottom
                         }
+
+                        mCallback?.event(TriggerEvent((100 * (1 - ratio)).toInt(), mType))
                     }
-                    mCallback?.event(TriggerEvent((100 * ratio).toInt(), mType))
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     if (mFlag) {
