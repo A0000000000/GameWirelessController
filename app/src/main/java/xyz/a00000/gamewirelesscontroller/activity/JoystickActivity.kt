@@ -4,9 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.IBinder
@@ -20,7 +17,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import xyz.a00000.gamewirelesscontroller.R
+import xyz.a00000.gamewirelesscontroller.activity.listen.KeyEventListener
+import xyz.a00000.gamewirelesscontroller.activity.listen.LevelListener
 import xyz.a00000.gamewirelesscontroller.bean.JoystickEvent
+import xyz.a00000.gamewirelesscontroller.db.ConfigSQLiteHelper
 import xyz.a00000.gamewirelesscontroller.service.ConnectionService
 import xyz.a00000.joystickcustomview.bean.GameEvent
 import xyz.a00000.joystickcustomview.bean.Xbox360Type
@@ -30,17 +30,80 @@ import xyz.a00000.joystickcustomview.view.*
 
 class JoystickActivity : AppCompatActivity() {
 
+    private val mConfigSQLiteHelper = ConfigSQLiteHelper(this, 1)
+
     private var mTvLog: TextView? = null
     private var mTvTips: TextView? = null
 
     private var mSensorManager: SensorManager? = null
-    private var mSensor:Sensor? = null
     private var mConnectionService: ConnectionService? = null
+
+    private var mKeyEventListener: KeyEventListener? = null
+    private var mLevelListener: LevelListener? = null
+
+    private val mCallback: Callback = object : Callback {
+        override fun event(ev: GameEvent) {
+            hideSystemBars()
+            onGameEvent(ev)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_joystick)
+
         hideSystemBars()
+        initListener()
+        initConnectionService()
+        initCustomizationViewEvent()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mLevelListener?.initSensorSystem()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mLevelListener?.disposeSensorSystem()
+    }
+
+    override fun onDestroy() {
+        mConnectionService?.closeConnection()
+        super.onDestroy()
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        hideSystemBars()
+        return super.onTouchEvent(event)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if ((mKeyEventListener?.onKeyDown(keyCode, event) == true)) {
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        if ((mKeyEventListener?.onKeyUp(keyCode, event) == true)) {
+            return true
+        }
+        return super.onKeyUp(keyCode, event)
+    }
+
+    private fun hideSystemBars() {
+        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.hide(WindowInsetsCompat.Type.statusBars())
+        }
+    }
+
+    private fun initConnectionService() {
+        if (mConfigSQLiteHelper.getConfig(ConfigActivity.CONFIG_DEBUG) == "1") {
+            return
+        }
         bindService(Intent(this, ConnectionService::class.java), object: ServiceConnection {
             override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
                 runOnUiThread {
@@ -65,35 +128,6 @@ class JoystickActivity : AppCompatActivity() {
 
             }
         }, Context.BIND_AUTO_CREATE)
-
-        mTvLog = findViewById(R.id.tv_log)
-        mTvTips = findViewById(R.id.tv_tips)
-        mTvLog?.setOnClickListener {
-            (it as TextView).text = ""
-        }
-
-        initCustomizationViewEvent()
-        initSensorSystem()
-
-    }
-
-    private fun hideSystemBars() {
-        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
-            controller.hide(WindowInsetsCompat.Type.systemBars())
-            controller.hide(WindowInsetsCompat.Type.statusBars())
-        }
-    }
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        hideSystemBars()
-        return super.onTouchEvent(event)
-    }
-
-    private val mCallback: Callback = object : Callback {
-        override fun event(ev: GameEvent) {
-            hideSystemBars()
-            onGameEvent(ev)
-        }
     }
 
     private fun initEventSystem() {
@@ -111,27 +145,12 @@ class JoystickActivity : AppCompatActivity() {
         }
     }
 
-    private var mSensorEventListener = object: SensorEventListener{
-        override fun onSensorChanged(e: SensorEvent?) {
-            if (e?.accuracy != 0) {
-                if (e?.sensor?.type == Sensor.TYPE_GYROSCOPE) {
-                    // Todo: todo something
-                }
-            }
-        }
-
-        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-
-        }
-    }
-
-    private fun initSensorSystem() {
-        mSensorManager = getSystemService(SensorManager::class.java)
-        mSensor = mSensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
-        mSensorManager?.registerListener(mSensorEventListener, mSensor, SensorManager.SENSOR_DELAY_GAME)
-    }
-
     private fun initCustomizationViewEvent() {
+        mTvLog = findViewById(R.id.tv_log)
+        mTvTips = findViewById(R.id.tv_tips)
+        mTvLog?.setOnClickListener {
+            (it as TextView).text = ""
+        }
         findViewById<LeftTopGroup>(R.id.ltg)?.setCallback(mCallback)
         findViewById<Rocker>(R.id.r_left_rocker)?.mCallback = mCallback
         findViewById<CrossKeyGroup>(R.id.ckg)?.setCallback(mCallback)
@@ -141,69 +160,37 @@ class JoystickActivity : AppCompatActivity() {
         findViewById<Rocker>(R.id.r_right_rocker)?.mCallback = mCallback
     }
 
-    private var mFirstVolumeDown = true
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (mFirstVolumeDown) {
-            if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-                mCallback.event(xyz.a00000.joystickcustomview.bean.KeyEvent(0, Xbox360Type.Companion.KeyType.LEFT_BUTTON))
-                mFirstVolumeDown = false
-                return true
-            }
-            if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-                mCallback.event(xyz.a00000.joystickcustomview.bean.KeyEvent(0, Xbox360Type.Companion.KeyType.RIGHT_BUTTON))
-                mFirstVolumeDown = false
-                return true
-            }
+    private fun initListener() {
+        if (mConfigSQLiteHelper.getConfig(ConfigActivity.CONFIG_VOL) == "1") {
+            mKeyEventListener = KeyEventListener(mCallback)
         }
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            return true
+        if (mConfigSQLiteHelper.getConfig(ConfigActivity.CONFIG_LEVEL) == "1") {
+            mSensorManager = getSystemService(SensorManager::class.java)
+            mLevelListener = LevelListener(mCallback, mSensorManager)
         }
-        return super.onKeyDown(keyCode, event)
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            mCallback.event(xyz.a00000.joystickcustomview.bean.KeyEvent(1, Xbox360Type.Companion.KeyType.LEFT_BUTTON))
-            mFirstVolumeDown = true
-            return true
-        }
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            mCallback.event(xyz.a00000.joystickcustomview.bean.KeyEvent(1, Xbox360Type.Companion.KeyType.RIGHT_BUTTON))
-            mFirstVolumeDown = true
-            return true
-        }
-        return super.onKeyUp(keyCode, event)
-    }
-
-    private fun vibrate() {
+    private fun vibrate(milliseconds: Long) {
         val vibrator = getSystemService(Vibrator::class.java)
         vibrator?.let {
             if (it.hasVibrator()) {
-                it.vibrate(VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE))
+                it.vibrate(VibrationEffect.createOneShot(milliseconds, VibrationEffect.DEFAULT_AMPLITUDE))
             }
         }
     }
 
     private fun onGameEvent(ev: GameEvent) {
         mConnectionService?.sendGameEvent(ev)
+        if (mConfigSQLiteHelper.getConfig(ConfigActivity.CONFIG_DEBUG) == "1") {
+            mTvLog?.text = ev.toString()
+        }
         if (ev.eventType != Xbox360Type.AXIS && ev.eventType != Xbox360Type.TRIGGER) {
-             vibrate()
+             vibrate(20)
         }
     }
 
     private fun onJoystickEvent(ev: JoystickEvent?) {
         mTvLog?.text = ev?.toString()
-    }
-
-    override fun onPause() {
-        mSensorManager?.unregisterListener(mSensorEventListener)
-        super.onPause()
-    }
-
-    override fun onDestroy() {
-        mConnectionService?.closeConnection()
-        super.onDestroy()
     }
 
 }

@@ -5,5 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming
 
 @JsonNaming( PropertyNamingStrategies.UpperCamelCaseStrategy::class)
 open class GameEvent(var eventType: Int) {
-
+    override fun toString(): String {
+        return "GameEvent(eventType=$eventType)"
+    }
 }

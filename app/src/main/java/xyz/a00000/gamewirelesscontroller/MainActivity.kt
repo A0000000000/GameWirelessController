@@ -13,11 +13,14 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
+import android.view.View
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.textview.MaterialTextView
+import xyz.a00000.gamewirelesscontroller.activity.ConfigActivity
 import xyz.a00000.gamewirelesscontroller.activity.JoystickActivity
+import xyz.a00000.gamewirelesscontroller.db.ConfigSQLiteHelper
 import xyz.a00000.gamewirelesscontroller.service.ConnectionService
 import java.util.stream.Collectors
 
@@ -35,6 +38,8 @@ class MainActivity: AppCompatActivity() {
     private var mTargetDevice: String? = null
 
     private var mConnectionService: ConnectionService? = null
+
+    private val mConfigSQLiteHelper = ConfigSQLiteHelper(this, 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,8 +94,25 @@ class MainActivity: AppCompatActivity() {
             val controllerIntent = Intent(this@MainActivity, JoystickActivity::class.java)
             startActivity(controllerIntent)
         }
-        mBtnController?.isEnabled = false
-        mBtnController?.text = "=>"
+        mTvTitle?.setOnLongClickListener {
+            if (mConfigSQLiteHelper.getConfig(ConfigActivity.CONFIG_LITE_JOYSTICK) != "1") {
+                startActivity(Intent(this@MainActivity, ConfigActivity::class.java))
+            } else {
+                // Todo: 启动简版控制器
+            }
+            return@setOnLongClickListener true
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mConfigSQLiteHelper.getConfig(ConfigActivity.CONFIG_DEBUG) == "1") {
+            mBtnController?.isEnabled = true
+            mBtnController?.text = "=>"
+        } else {
+            mBtnController?.isEnabled = false
+            mBtnController?.text = "=>"
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
