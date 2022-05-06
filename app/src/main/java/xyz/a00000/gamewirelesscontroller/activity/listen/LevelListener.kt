@@ -33,7 +33,7 @@ class LevelListener(private val mCallback: Callback, private val mSensorManager:
                     }
                     SensorManager.getRotationMatrix(mRotationMatrix, null, mAccelerometerReading, mMagnetometerReading)
                     SensorManager.getOrientation(mRotationMatrix, mOrientationAngles)
-                    onAngleChange(-mOrientationAngles[1], mOrientationAngles[2])
+                    onAngleChange(-mOrientationAngles[1], -mOrientationAngles[2])
                 }
             }
         }
