@@ -41,13 +41,9 @@ class RockerEventListener(private val mRocker: Rocker) {
         if (mBegin) {
             val clickRadius = mRadius * mClickRatio
             val distanceToCenterSquare = abs(event.x - mRadius) * abs(event.x - mRadius) + abs(event.y - mRadius) * abs(event.y - mRadius)
-            if (distanceToCenterSquare <= clickRadius * clickRadius) {
-                mOutTouchArea = false
-            } else {
-                mOutTouchArea = true
-                mRocker.mCallback?.event(RockerEvent(toPercentage(event.x.toInt()), -toPercentage(event.y.toInt()), mEventType))
-                mRocker.changeTipsPos(event.x, event.y)
-            }
+            mOutTouchArea = distanceToCenterSquare > clickRadius * clickRadius
+            mRocker.mCallback?.event(RockerEvent(toPercentage(event.x.toInt()), -toPercentage(event.y.toInt()), mEventType))
+            mRocker.changeTipsPos(event.x, event.y)
         }
     }
 
@@ -57,14 +53,14 @@ class RockerEventListener(private val mRocker: Rocker) {
             val distanceToCenterSquare = abs(event.x - mRadius) * abs(event.x - mRadius) + abs(event.y - mRadius) * abs(event.y - mRadius)
             if (distanceToCenterSquare > clickRadius * clickRadius) {
                 mOutTouchArea = true
-                if (distanceToCenterSquare <= mRadius * mRadius) {
-                    mRocker.mCallback?.event(RockerEvent(toPercentage(event.x.toInt()), -toPercentage(event.y.toInt()), mEventType))
-                    mRocker.changeTipsPos(event.x, event.y)
-                } else {
-                    val scalePoint = scalePoint(PointF(event.x, event.y))
-                    mRocker.mCallback?.event(RockerEvent(toPercentage(scalePoint.x.toInt()), -toPercentage(scalePoint.y.toInt()), mEventType))
-                    mRocker.changeTipsPos(scalePoint.x, scalePoint.y)
-                }
+            }
+            if (distanceToCenterSquare <= mRadius * mRadius) {
+                mRocker.mCallback?.event(RockerEvent(toPercentage(event.x.toInt()), -toPercentage(event.y.toInt()), mEventType))
+                mRocker.changeTipsPos(event.x, event.y)
+            } else {
+                val scalePoint = scalePoint(PointF(event.x, event.y))
+                mRocker.mCallback?.event(RockerEvent(toPercentage(scalePoint.x.toInt()), -toPercentage(scalePoint.y.toInt()), mEventType))
+                mRocker.changeTipsPos(scalePoint.x, scalePoint.y)
             }
         }
     }

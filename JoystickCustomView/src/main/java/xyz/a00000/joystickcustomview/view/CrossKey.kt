@@ -57,8 +57,7 @@ class CrossKey(context: Context, attrs: AttributeSet): AppCompatTextView(context
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val value = min(widthMeasureSpec, heightMeasureSpec)
-        super.onMeasure(value, value)
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         mRect.right = measuredWidth
         mRect.bottom = measuredHeight
     }

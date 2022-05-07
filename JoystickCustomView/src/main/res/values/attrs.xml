@@ -12,7 +12,6 @@
         <attr name="r_front_color" format="color"/>
         <attr name="r_click_color" format="color"/>
         <attr name="r_type" format="integer"/>
-
     </declare-styleable>
 
     <declare-styleable name="SimpleKey">
@@ -27,6 +26,12 @@
         <attr name="t_back_color" format="color"/>
         <attr name="t_front_color" format="color"/>
         <attr name="t_font_color" format="color"/>
+    </declare-styleable>
+
+    <declare-styleable name="AxisView">
+        <attr name="av_back_color" format="color"/>
+        <attr name="av_front_color" format="color"/>
+        <attr name="av_type" format="integer"/>
     </declare-styleable>
 
 </resources>

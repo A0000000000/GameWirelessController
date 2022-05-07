@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".activity.LiteJoystickActivity"
+    android:background="@color/black">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <xyz.a00000.joystickcustomview.view.Trigger
+            android:id="@+id/lite_lt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAllCaps="false"
+            android:text="LT"
+            app:t_begin_to_end="false"
+            app:t_type="@integer/LEFT_TRIGGER"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="8">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <xyz.a00000.joystickcustomview.view.Rocker
+                android:id="@+id/lite_left_rocker"
+                android:layout_centerInParent="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:r_type="@integer/LEFT_ROCKER" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/lite_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_centerInParent="true"
+                    android:text="Game Wireless Controller"
+                    android:textAllCaps="false"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="7">
+
+                <xyz.a00000.joystickcustomview.group.OperatorPanelGroup
+                    android:id="@+id/lite_operator"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2">
+
+                <TextView
+                    android:id="@+id/lite_log"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_centerInParent="true"
+                    android:textAllCaps="false"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <xyz.a00000.joystickcustomview.group.ABXYGroup
+                android:id="@+id/lite_abxy"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <xyz.a00000.joystickcustomview.view.Trigger
+            android:id="@+id/lite_rt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAllCaps="false"
+            android:text="RT"
+            app:t_begin_to_end="false"
+            app:t_type="@integer/RIGHT_TRIGGER"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <xyz.a00000.joystickcustomview.view.CrossKey
+                android:id="@+id/lite_top"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:text="↑"
+                app:ck_type="@integer/TOP" />
+
+            <xyz.a00000.joystickcustomview.view.CrossKey
+                android:id="@+id/lite_left"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:text="←"
+                app:ck_type="@integer/LEFT" />
+
+            <xyz.a00000.joystickcustomview.view.CrossKey
+                android:id="@+id/lite_right"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:text="→"
+                app:ck_type="@integer/RIGHT" />
+
+            <xyz.a00000.joystickcustomview.view.CrossKey
+                android:id="@+id/lite_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:text="↓"
+                app:ck_type="@integer/BOTTOM" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <xyz.a00000.joystickcustomview.view.AxisView
+                android:id="@+id/lite_av"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:av_type="@integer/RIGHT_ROCKER"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

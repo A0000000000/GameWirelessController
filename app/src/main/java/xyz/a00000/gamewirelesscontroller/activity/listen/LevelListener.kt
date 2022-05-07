@@ -43,10 +43,40 @@ class LevelListener(private val mCallback: Callback, private val mSensorManager:
         }
     }
 
+    private var mFlag = true
+
     private fun onAngleChange(leftToRight: Float, topToBottom: Float) {
-        val x = toPercentage(fixRange(leftToRight))
-        val y = toPercentage(fixRange(topToBottom))
-        mCallback.event(RockerEvent(x, y, Xbox360Type.Companion.AxisType.RIGHT_ROCKER))
+        var x = toPercentage(fixRange(leftToRight))
+        var y = toPercentage(fixRange(topToBottom))
+        if (x < 10 && x > -10) {
+            x = 0
+        }
+        if (y < 10 && y > -10) {
+            y = 0
+        }
+        x *= 2
+        y *= 2
+        if (x > 100) {
+            x = 100
+        }
+        if (x < -100) {
+            x = -100
+        }
+        if (y > 100) {
+            y = 100
+        }
+        if (y < -100) {
+            y = -100
+        }
+        if (x != 0 || y != 0) {
+            mCallback.event(RockerEvent(x, y, Xbox360Type.Companion.AxisType.RIGHT_ROCKER))
+            mFlag = true
+        } else {
+            if (mFlag) {
+                mCallback.event(RockerEvent(0, 0, Xbox360Type.Companion.AxisType.RIGHT_ROCKER))
+                mFlag = false
+            }
+        }
     }
 
     private fun toPercentage(value: Float): Int {
