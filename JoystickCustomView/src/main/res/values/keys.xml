@@ -14,6 +14,9 @@
     <integer name="LEFT_BUTTON">8</integer>
     <integer name="RIGHT_BUTTON">9</integer>
 
+    <integer name="RIGHT_ROCKER_BUTTON">10</integer>
+    <integer name="LEFT_ROCKER_BUTTON">11</integer>
+
     <integer name="MENU">12</integer>
     <integer name="VIEW">13</integer>
     <integer name="MAIN">14</integer>

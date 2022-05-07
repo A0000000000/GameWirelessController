@@ -107,6 +107,7 @@ class LiteJoystickActivity : AppCompatActivity() {
         findViewById<CrossKey>(R.id.lite_right)?.mCallback = mCallback
         findViewById<CrossKey>(R.id.lite_bottom)?.mCallback = mCallback
         findViewById<AxisView>(R.id.lite_av)?.mCallback = mCallback
+        findViewById<SimpleKey>(R.id.lite_sk_rrb)?.mCallback = mCallback
     }
 
     private fun hideSystemBars() {
@@ -197,7 +198,7 @@ class LiteJoystickActivity : AppCompatActivity() {
     }
 
     private fun onJoystickEvent(ev: JoystickEvent?) {
-
+        mTvLog?.text = ev?.toString()
     }
 
 }

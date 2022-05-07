@@ -61,6 +61,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:layout_centerInParent="true"
+                    android:gravity="center"
                     android:text="Game Wireless Controller"
                     android:textAllCaps="false"/>
 
@@ -90,6 +91,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:layout_centerInParent="true"
+                    android:gravity="center"
                     android:textAllCaps="false"/>
 
             </RelativeLayout>
@@ -105,7 +107,23 @@
                 android:id="@+id/lite_abxy"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerInParent="true"/>
+                android:layout_centerInParent="true" />
+
+            <RelativeLayout
+                android:layout_below="@+id/lite_abxy"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <xyz.a00000.joystickcustomview.view.SimpleKey
+                    android:id="@+id/lite_sk_rrb"
+                    android:layout_centerInParent="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Right Rocker Button"
+                    app:sk_back_color="@color/white"
+                    app:sk_type="@integer/RIGHT_ROCKER_BUTTON"/>
+
+            </RelativeLayout>
 
         </RelativeLayout>
 
@@ -150,15 +168,6 @@
                 app:ck_type="@integer/TOP" />
 
             <xyz.a00000.joystickcustomview.view.CrossKey
-                android:id="@+id/lite_left"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:textAllCaps="false"
-                android:text="←"
-                app:ck_type="@integer/LEFT" />
-
-            <xyz.a00000.joystickcustomview.view.CrossKey
                 android:id="@+id/lite_right"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -166,6 +175,15 @@
                 android:textAllCaps="false"
                 android:text="→"
                 app:ck_type="@integer/RIGHT" />
+
+            <xyz.a00000.joystickcustomview.view.CrossKey
+                android:id="@+id/lite_left"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:text="←"
+                app:ck_type="@integer/LEFT" />
 
             <xyz.a00000.joystickcustomview.view.CrossKey
                 android:id="@+id/lite_bottom"
